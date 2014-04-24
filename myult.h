@@ -22,17 +22,12 @@ typedef struct myscheduler
 
 typedef struct mypthread
 {
-	int disabled;
+	struct mypthread *jointarget;
 	ucontext_t context;
-
-
-
-	typedef enum {READY, WAITING, KILLED, BLOCKED} state;
+	myscheduler_t scheduler;
+	typedef enum {READY, WAITING, KILLED, BLOCKED, JOINREADY, FINISHED} state;
+	
 } mypthread_t;
-
-
-
-
 
 typedef struct mymutex
 {
@@ -41,10 +36,13 @@ typedef struct mymutex
 } mymutex_t;
 
 
-int mypthread_create(myscheduler_t scheduler, myentry_t entry, void *arg);
-void mypthread_yield(mypthread_t *thread);
+int mypthread_create(myscheduler_t *scheduler, void *arg);
+void mypthread_yield(mypthread_t *local, *mypthread_t remote);
+void mypthread_join(mypthread_t *local, mypthread_t *remote);
+void mypthread_exit(mypthread_t *thread);
 
-mymutex_t * mymutex_create();
+
+mymutex_t* mymutex_create();
 void mymutex_lock(mypthread_t *thread, mymutex_t *mutex);
 void mymutex_unlock(mypthread_t *thread, mymutex_t *mutex);
 int mymutex_trylock(mypthread_t *thread, mymutex_t *mutex);
